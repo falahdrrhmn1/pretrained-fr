@@ -1,0 +1,37 @@
+# Python virtual environment
+.venv/
+venv/
+
+# Python cache
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+
+# Runtime logs
+logs/
+*.log
+
+# Local reference/biometric images
+reference_images/
+FALAH.jpg
+
+# Error/debug files
+kernel.errors.txt
+
+# IDE
+.vscode/
+.idea/
+
+# OS
+Thumbs.db
+.DS_Store
+
+# Biometric/reference images
+*.jpg
+*.jpeg
+*.JPG
+*.JPEG
+
+# Large Swin-V2 model - download separately
+models/commercial_test/cvpr2024_fas/openvino/face_swin_v2_base_fp32.bin
