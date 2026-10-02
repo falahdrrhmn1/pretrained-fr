@@ -35,3 +35,9 @@ Thumbs.db
 
 # Large Swin-V2 model - download separately
 models/commercial_test/cvpr2024_fas/openvino/face_swin_v2_base_fp32.bin
+
+# Original CVPR2024 checkpoint - downloaded during setup
+models/commercial_test/cvpr2024_fas/weights/
+
+# Generated large OpenVINO weights
+models/commercial_test/cvpr2024_fas/openvino/face_swin_v2_base_fp32.bin

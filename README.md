@@ -520,79 +520,100 @@ Siapkan foto reference Anda sendiri.
 
 Folder reference_images dan file JPG/JPEG diabaikan oleh Git
 dan tidak akan diupload ke repository.
+
 ---
 
-## Model Swin-V2 Besar — Download Terpisah
+## Menyiapkan Model Swin-V2 Liveness
 
-File berikut tidak disimpan di repository GitHub karena ukurannya sekitar 380 MB:
+Model OpenVINO Swin-V2 yang besar tidak disimpan di repository ini.
 
-face_swin_v2_base_fp32.bin
+File berikut akan dibuat secara lokal:
 
-File tersebut harus didownload secara terpisah.
+    models\commercial_test\cvpr2024_fas\openvino\face_swin_v2_base_fp32.bin
 
-Download:
+Model berasal dari project resmi:
 
-PASTE_LINK_DOWNLOAD_DI_SINI
+    Xianhua-He/cvpr2024-face-anti-spoofing-challenge
 
-Setelah selesai download, simpan file dengan nama:
+Model yang digunakan adalah:
 
-face_swin_v2_base_fp32.bin
+    face_swin_v2_base.pth
 
-ke folder:
+### 1. Install dependency untuk setup model
 
-models\commercial_test\cvpr2024_fas\openvino\
+Setelah virtual environment dan requirements utama selesai di-install, jalankan:
 
-Struktur akhirnya harus seperti ini:
+    .\.venv\Scripts\python.exe -m pip install torch torchvision timm gdown
 
-pretrained-fr/
-└── models/
-    └── commercial_test/
-        └── cvpr2024_fas/
-            └── openvino/
-                ├── face_swin_v2_base_fp32.xml
-                └── face_swin_v2_base_fp32.bin
+Dependency ini diperlukan untuk mendownload checkpoint asli dan melakukan konversi ke OpenVINO.
 
-Dari PowerShell, cek keberadaan model dengan:
+### 2. Buat folder weights
 
-Test-Path ".\models\commercial_test\cvpr2024_fas\openvino\face_swin_v2_base_fp32.bin"
+Jalankan dari root folder project:
+
+    New-Item `
+        -ItemType Directory `
+        -Force `
+        ".\models\commercial_test\cvpr2024_fas\weights" |
+    Out-Null
+
+### 3. Download checkpoint resmi
+
+Jalankan:
+
+    .\.venv\Scripts\python.exe -m gdown `
+        1E4UD8UK_KzjhpAvR6hYInlteOEaxDZbZ `
+        -O ".\models\commercial_test\cvpr2024_fas\weights\face_swin_v2_base.pth"
+
+Tunggu sampai download selesai.
+
+Cek:
+
+    Test-Path ".\models\commercial_test\cvpr2024_fas\weights\face_swin_v2_base.pth"
 
 Output harus:
 
-True
+    True
 
-File ini diperlukan untuk menjalankan tahap Swin-V2 liveness detection.
+### 4. Convert checkpoint ke OpenVINO
 
----
+Jalankan:
 
-## Foto Reference
+    .\.venv\Scripts\python.exe `
+        .\convert_cvpr2024_swin_to_openvino.py `
+        --device CPU
 
-Foto reference tidak disediakan di repository.
+Proses ini akan menghasilkan:
 
-Setiap pengguna harus menggunakan foto wajahnya sendiri.
+    models\commercial_test\cvpr2024_fas\openvino\
+    ├── face_swin_v2_base_fp32.xml
+    └── face_swin_v2_base_fp32.bin
 
-Buat folder:
+File BIN berukuran sekitar 380 MB dan hanya disimpan di komputer lokal.
 
-reference_images
+### 5. Verifikasi hasil conversion
 
-Kemudian masukkan satu foto, misalnya:
+Jalankan:
 
-reference_images\MY_FACE.jpg
+    Test-Path ".\models\commercial_test\cvpr2024_fas\openvino\face_swin_v2_base_fp32.xml"
 
-Foto disarankan:
-- hanya berisi satu wajah;
-- wajah terlihat jelas;
-- tidak blur;
-- pencahayaan cukup;
-- posisi wajah cukup frontal.
+dan:
 
-Folder reference_images dan file JPG/JPEG tidak diupload ke repository.
+    Test-Path ".\models\commercial_test\cvpr2024_fas\openvino\face_swin_v2_base_fp32.bin"
 
-Contoh menjalankan aplikasi:
+Keduanya harus menghasilkan:
 
-.\.venv\Scripts\python.exe `
-    .\attendance_full_openvino_logged_fast_json.py `
-    --reference ".\reference_images\MY_FACE.jpg" `
-    --employee-id "001" `
-    --location "Office A" `
-    --fas-device CPU
+    True
+
+Cek ukuran file BIN:
+
+    "{0:N2} MB" -f (
+        (Get-Item ".\models\commercial_test\cvpr2024_fas\openvino\face_swin_v2_base_fp32.bin").Length / 1MB
+    )
+
+Ukuran normal sekitar:
+
+    380 MB
+
+Setelah model tersedia, lanjutkan ke bagian menjalankan aplikasi.
 
